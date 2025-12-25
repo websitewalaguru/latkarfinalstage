@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latkar Sweets - The Taste of Satara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600&family=Marcellus&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'theme-primary': '#632A2A', /* Deep Brownish Red */
+                        'theme-secondary': '#C49A6C', /* Muted Gold/Biscuit */
+                        'theme-bg': '#F9F5F0', /* Warm Light Beige */
+                        'theme-white': '#FFFFFF',
+                        'theme-text': '#4A4A4A',
+                    },
+                    fontFamily: {
+                        serif: ['"Marcellus"', 'serif'], /* Elegant Heading Font */
+                        sans: ['"Jost"', 'sans-serif'], /* Modern Body Font */
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.5rem',
+                        '3xl': '2rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #F9F5F0;
+        }
+        .hero-curve {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            transform: rotate(180deg);
+        }
+        .hero-curve svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 60px;
+        }
+        .hero-curve .shape-fill {
+            fill: #F9F5F0;
+        }
+        .product-card {
+            transition: all 0.4s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.1);
+        }
+        .product-card .actions {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        .product-card:hover .actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .nav-link.active {
+            color: #632A2A;
+            font-weight: 500;
+        }
+        .nav-link.active::after {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 6px;
+            background: #C49A6C;
+            border-radius: 50%;
+            margin: 4px auto 0;
+        }
+        .category-item {
+            transition: all 0.3s ease;
+        }
+        .category-item:hover .img-container {
+            border-color: #632A2A;
+            transform: scale(1.05);
+        }
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F9F5F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C49A6C;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #632A2A;
+        }
+    </style>
+</head>
+<body class="font-sans text-theme-text flex flex-col min-h-screen">
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-24 right-5 bg-white border-l-4 border-theme-secondary text-theme-primary px-6 py-4 rounded-r shadow-xl transform translate-x-full transition-transform duration-300 z-50 flex items-center gap-3">
+        <div class="bg-theme-bg p-2 rounded-full text-theme-secondary">
+            <i class="fas fa-shopping-basket"></i>
+        </div>
+        <div>
+            <h5 class="font-serif font-bold text-sm">Added to Cart</h5>
+            <span id="toast-message" class="text-xs text-gray-500">Item added successfully</span>
+        </div>
+    </div>
+
+    <!-- Top Bar -->
+    <div class="bg-theme-primary text-white/90 text-xs py-2.5 px-4 tracking-wide">
+        <div class="container mx-auto flex justify-between items-center">
+            <p class="flex items-center gap-2"><i class="fas fa-map-marker-alt text-theme-secondary"></i> Satara, Maharashtra - 415001</p>
+            <div class="hidden md:flex gap-6 font-medium">
+                <a href="#" class="hover:text-theme-secondary transition">Track Order</a>
+                <a href="#" onclick="showPage('contact-page')" class="hover:text-theme-secondary transition">Support</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-stone-100">
+        <div class="container mx-auto px-4 py-4 md:py-6">
+            <div class="flex justify-between items-center">
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-theme-primary text-2xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <!-- Logo -->
+                <div class="text-center md:text-left flex-1 md:flex-none cursor-pointer group" onclick="showPage('home-page')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 md:w-12 md:h-12 bg-theme-primary text-theme-secondary flex items-center justify-center rounded-full font-serif text-2xl font-bold group-hover:bg-theme-secondary group-hover:text-theme-primary transition duration-300">L</div>
+                        <div class="flex flex-col">
+                            <h1 class="font-serif text-2xl md:text-3xl font-bold text-theme-primary leading-none">Latkar<span class="text-theme-secondary">.</span></h1>
+                            <span class="text-[10px] tracking-[0.2em] text-gray-400 uppercase font-medium">Sweets & Namkeen</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links (Centered) -->
+                <nav class="hidden md:flex flex-1 justify-center">
+                    <ul class="flex gap-8 lg:gap-12 font-medium text-gray-600">
+                        <li><button onclick="showPage('home-page')" class="nav-link active transition focus:outline-none" data-target="home-page">Home</button></li>
+                        <li><button onclick="showPage('sweets-page')" class="nav-link hover:text-theme-primary transition focus:outline-none" data-target="sweets-page">Shop</button></li>
+                        <li><button onclick="showPage('savories-page')" class="nav-link hover:text-theme-primary transition focus:outline-none" data-target="savories-page">Namkeen</button></li>
+                        <li><button onclick="showPage('about-page')" class="nav-link hover:text-theme-primary transition focus:outline-none" data-target="about-page">About</button></li>
+                        <li><button onclick="showPage('contact-page')" class="nav-link hover:text-theme-primary transition focus:outline-none" data-target="contact-page">Contact</button></li>
+                    </ul>
+                </nav>
+
+                <!-- Icons -->
+                <div class="flex gap-5 items-center">
+                    <button class="hidden md:block text-gray-500 hover:text-theme-primary transition">
+                         <i class="fas fa-search text-lg"></i>
+                    </button>
+                    <button onclick="toggleLoginModal()" class="text-gray-500 hover:text-theme-primary transition">
+                        <i class="far fa-user text-lg"></i>
+                    </button>
+                    <button class="text-gray-500 hover:text-theme-primary transition relative group">
+                        <i class="fas fa-shopping-basket text-lg"></i>
+                        <span class="absolute -top-2 -right-2 bg-theme-secondary text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white group-hover:scale-110 transition" id="cart-count">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Hidden) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 absolute w-full left-0 top-full shadow-xl">
+            <div class="p-6 space-y-4">
+                <input type="text" placeholder="Search..." class="w-full bg-theme-bg border-none rounded-lg p-3 text-sm focus:ring-1 focus:ring-theme-primary">
+                <button onclick="showPage('home-page'); toggleMobileMenu()" class="block w-full text-left font-medium text-theme-primary">Home</button>
+                <button onclick="showPage('sweets-page'); toggleMobileMenu()" class="block w-full text-left font-medium text-gray-600">Shop Sweets</button>
+                <button onclick="showPage('savories-page'); toggleMobileMenu()" class="block w-full text-left font-medium text-gray-600">Namkeen</button>
+                <button onclick="showPage('about-page'); toggleMobileMenu()" class="block w-full text-left font-medium text-gray-600">Our Story</button>
+                <button onclick="showPage('contact-page'); toggleMobileMenu()" class="block w-full text-left font-medium text-gray-600">Contact</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-grow">
+
+        <!-- Login Modal -->
+        <div id="login-modal" class="fixed inset-0 bg-theme-primary/20 backdrop-blur-sm hidden items-center justify-center z-50">
+            <div class="bg-white rounded-2xl p-8 w-full max-w-sm relative mx-4 shadow-2xl animate-[fadeIn_0.3s_ease-out]">
+                <button onclick="toggleLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-theme-primary w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="text-center mb-8">
+                    <h2 class="font-serif text-2xl font-bold text-theme-primary">Welcome Back</h2>
+                    <p class="text-gray-500 text-sm mt-1">Please login to continue</p>
+                </div>
+                <form onsubmit="event.preventDefault(); toggleLoginModal(); alert('Logged in successfully!');">
+                    <div class="space-y-4">
+                        <input type="text" class="w-full bg-theme-bg border border-transparent focus:bg-white focus:border-theme-secondary rounded-xl p-3 outline-none transition" placeholder="Email Address" required>
+                        <input type="password" class="w-full bg-theme-bg border border-transparent focus:bg-white focus:border-theme-secondary rounded-xl p-3 outline-none transition" placeholder="Password" required>
+                    </div>
+                    <div class="flex justify-end mt-2 mb-6">
+                        <a href="#" class="text-xs text-theme-secondary hover:underline">Forgot Password?</a>
+                    </div>
+                    <button type="submit" class="bg-theme-primary text-white font-medium py-3.5 px-8 rounded-xl w-full hover:bg-theme-secondary transition duration-300 shadow-lg shadow-theme-primary/30">Sign In</button>
+                </form>
+                <div class="mt-8 text-center border-t border-gray-100 pt-6">
+                     <p class="text-sm text-gray-500">Don't have an account? <a href="#" class="text-theme-primary font-bold hover:text-theme-secondary">Register</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== HOME PAGE ==================== -->
+        <div id="home-page" class="page-section fade-in">
+            <!-- Hero Section -->
+            <section class="relative min-h-[500px] md:h-[650px] flex items-center justify-center overflow-hidden">
+                <!-- Background & Overlay -->
+                <div class="absolute inset-0 z-0">
+                    <img src="kandhipedha_22.jpg" alt="Indian Sweets" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-r from-theme-primary/90 via-theme-primary/70 to-transparent"></div>
+                </div>
+                
+                <div class="relative z-10 container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-white space-y-6 md:pl-8">
+                        <div class="inline-block px-4 py-1 border border-white/30 rounded-full text-xs tracking-widest uppercase bg-white/10 backdrop-blur-md text-theme-secondary font-bold">Since 1950</div>
+                        <h2 class="font-serif text-5xl md:text-7xl font-bold leading-tight">The Royal Taste <br> <span class="text-theme-secondary">of Satara</span></h2>
+                        <p class="text-lg md:text-xl text-white/80 max-w-lg font-light leading-relaxed">Experience the rich tradition of our famous Kandi Pedha, handcrafted with pure buffalo milk ghee and generations of love.</p>
+                        <div class="flex gap-4 pt-4">
+                            <button onclick="showPage('sweets-page')" class="bg-theme-secondary text-white font-medium py-4 px-8 rounded-full hover:bg-white hover:text-theme-primary transition duration-300 shadow-lg shadow-theme-secondary/30">
+                                Shop Collection
+                            </button>
+                            <button class="bg-transparent border border-white/30 text-white font-medium py-4 px-8 rounded-full hover:bg-white hover:text-theme-primary transition duration-300">
+                                View History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SVG Curve -->
+                <div class="hero-curve">
+                    <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+                    </svg>
+                </div>
+            </section>
+
+            <!-- Collections Section -->
+            <section class="py-20 relative">
+                <div class="container mx-auto px-4">
+                    <div class="text-center mb-16 max-w-2xl mx-auto">
+                        <h4 class="text-theme-secondary font-bold text-sm tracking-widest uppercase mb-2">Categories</h4>
+                        <h3 class="font-serif text-4xl font-bold text-theme-primary">Curated Delights</h3>
+                        <div class="w-16 h-1 bg-theme-secondary mx-auto mt-4 rounded-full"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+                        <!-- Category 1 -->
+                        <div class="category-item group cursor-pointer" onclick="showPage('sweets-page')">
+                            <div class="img-container relative aspect-[4/5] overflow-hidden rounded-2xl border-4 border-white shadow-lg bg-white mb-4">
+                                <img src="kandhipedha_111.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Pedha">
+                                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition"></div>
+                                <div class="absolute bottom-4 left-0 w-full text-center">
+                                     <span class="inline-block bg-white/90 backdrop-blur text-theme-primary px-6 py-2 rounded-full text-sm font-bold shadow-sm">Pedhas</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Category 2 -->
+                         <div class="category-item group cursor-pointer" onclick="showPage('sweets-page')">
+                            <div class="img-container relative aspect-[4/5] overflow-hidden rounded-2xl border-4 border-white shadow-lg bg-white mb-4">
+                                <img src="motichorladduos-111.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Ladoo">
+                                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition"></div>
+                                <div class="absolute bottom-4 left-0 w-full text-center">
+                                     <span class="inline-block bg-white/90 backdrop-blur text-theme-primary px-6 py-2 rounded-full text-sm font-bold shadow-sm">Ladoos</span>
+                                </div>
+                            </div>
+                        </div>
+
+                         <!-- Category 3 -->
+                         <div class="category-item group cursor-pointer" onclick="showPage('sweets-page')">
+                            <div class="img-container relative aspect-[4/5] overflow-hidden rounded-2xl border-4 border-white shadow-lg bg-white mb-4">
+                                <img src="dryfruits-111.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Kaju">
+                                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition"></div>
+                                <div class="absolute bottom-4 left-0 w-full text-center">
+                                     <span class="inline-block bg-white/90 backdrop-blur text-theme-primary px-6 py-2 rounded-full text-sm font-bold shadow-sm">Premium Kaju</span>
+                                </div>
+                            </div>
+                        </div>
+
+                         <!-- Category 4 -->
+                         <div class="category-item group cursor-pointer" onclick="showPage('savories-page')">
+                            <div class="img-container relative aspect-[4/5] overflow-hidden rounded-2xl border-4 border-white shadow-lg bg-white mb-4">
+                                <img src="misxphoto-namkin.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Savories">
+                                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition"></div>
+                                <div class="absolute bottom-4 left-0 w-full text-center">
+                                     <span class="inline-block bg-white/90 backdrop-blur text-theme-primary px-6 py-2 rounded-full text-sm font-bold shadow-sm">Namkeen</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Products -->
+            <section class="py-16 bg-white">
+                <div class="container mx-auto px-4">
+                    <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+                        <div>
+                            <h4 class="text-theme-secondary font-bold uppercase tracking-wider text-sm mb-1">Our Bestsellers</h4>
+                            <h3 class="font-serif text-3xl font-bold text-theme-primary">Trending Now</h3>
+                        </div>
+                        <button onclick="showPage('sweets-page')" class="group flex items-center gap-2 text-theme-primary font-medium hover:text-theme-secondary transition mt-4 md:mt-0">
+                            View All Products <i class="fas fa-arrow-right group-hover:translate-x-1 transition"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        <!-- Card 1 -->
+                        <div class="product-card group relative">
+                            <div class="relative overflow-hidden rounded-2xl bg-theme-bg aspect-[3/4]">
+                                <span class="absolute top-4 left-4 bg-theme-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider z-10">Best Seller</span>
+                                <img src="kandhipedha_22.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" alt="Pedha">
+                                <!-- Hover Actions -->
+                                <div class="actions absolute bottom-4 inset-x-4 flex gap-2">
+                                    <button onclick="addToCart('Satara Kandi Pedha')" class="flex-1 bg-white/95 backdrop-blur text-theme-primary font-bold py-3 rounded-xl hover:bg-theme-primary hover:text-white transition shadow-lg flex items-center justify-center gap-2">
+                                        <i class="fas fa-shopping-basket"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pt-4 text-center">
+                                <h4 class="font-serif font-bold text-lg text-theme-primary group-hover:text-theme-secondary transition">Satara Kandi Pedha</h4>
+                                <div class="text-theme-secondary font-bold mt-1">₹520 / kg</div>
+                            </div>
+                        </div>
+
+                         <!-- Card 2 -->
+                        <div class="product-card group relative">
+                             <div class="relative overflow-hidden rounded-2xl bg-theme-bg aspect-[3/4]">
+                                <img src="motichorladduos-111.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" alt="Ladoo">
+                                <div class="actions absolute bottom-4 inset-x-4 flex gap-2">
+                                    <button onclick="addToCart('Motichoor Ladoo')" class="flex-1 bg-white/95 backdrop-blur text-theme-primary font-bold py-3 rounded-xl hover:bg-theme-primary hover:text-white transition shadow-lg flex items-center justify-center gap-2">
+                                        <i class="fas fa-shopping-basket"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pt-4 text-center">
+                                <h4 class="font-serif font-bold text-lg text-theme-primary group-hover:text-theme-secondary transition">Motichoor Ladoo</h4>
+                                <div class="text-theme-secondary font-bold mt-1">₹480 / kg</div>
+                            </div>
+                        </div>
+
+                         <!-- Card 3 -->
+                        <div class="product-card group relative">
+                             <div class="relative overflow-hidden rounded-2xl bg-theme-bg aspect-[3/4]">
+                                <img src="kajjukatli-1564.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" alt="Kaju">
+                                <div class="actions absolute bottom-4 inset-x-4 flex gap-2">
+                                    <button onclick="addToCart('Kaju Katli')" class="flex-1 bg-white/95 backdrop-blur text-theme-primary font-bold py-3 rounded-xl hover:bg-theme-primary hover:text-white transition shadow-lg flex items-center justify-center gap-2">
+                                        <i class="fas fa-shopping-basket"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pt-4 text-center">
+                                <h4 class="font-serif font-bold text-lg text-theme-primary group-hover:text-theme-secondary transition">Kaju Katli</h4>
+                                <div class="text-theme-secondary font-bold mt-1">₹950 / kg</div>
+                            </div>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="product-card group relative">
+                             <div class="relative overflow-hidden rounded-2xl bg-theme-bg aspect-[3/4]">
+                                <img src="bhakarwadi-1.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" alt="Bakarwadi">
+                                <div class="actions absolute bottom-4 inset-x-4 flex gap-2">
+                                    <button onclick="addToCart('Bakarwadi')" class="flex-1 bg-white/95 backdrop-blur text-theme-primary font-bold py-3 rounded-xl hover:bg-theme-primary hover:text-white transition shadow-lg flex items-center justify-center gap-2">
+                                        <i class="fas fa-shopping-basket"></i> Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="pt-4 text-center">
+                                <h4 class="font-serif font-bold text-lg text-theme-primary group-hover:text-theme-secondary transition">Bakarwadi</h4>
+                                <div class="text-theme-secondary font-bold mt-1">₹280 / kg</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <!-- Testimonials Section -->
+             <section class="py-20 bg-theme-bg relative overflow-hidden">
+                <!-- Decorative Elements -->
+                <div class="absolute top-0 left-0 w-64 h-64 bg-theme-secondary/5 rounded-full filter blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+                <div class="absolute bottom-0 right-0 w-96 h-96 bg-theme-primary/5 rounded-full filter blur-3xl translate-x-1/2 translate-y-1/2"></div>
+
+                <div class="container mx-auto px-4 text-center relative z-10">
+                    <h3 class="font-serif text-3xl font-bold text-theme-primary mb-12">Customer Love</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="p-8 rounded-2xl bg-white shadow-sm hover:shadow-xl transition duration-300 text-left relative">
+                            <i class="fas fa-quote-right absolute top-8 right-8 text-4xl text-theme-bg"></i>
+                            <div class="flex text-yellow-400 text-xs mb-4">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-gray-600 mb-6 leading-relaxed">"The Kandi Pedha takes me back to my childhood in Satara. Absolutely authentic taste and the packaging is beautiful."</p>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-theme-primary text-white flex items-center justify-center font-bold">R</div>
+                                <div>
+                                    <h5 class="font-bold text-theme-primary text-sm">Rajesh Deshmukh</h5>
+                                    <span class="text-xs text-gray-400">Verified Buyer</span>
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="p-8 rounded-2xl bg-white shadow-sm hover:shadow-xl transition duration-300 text-left relative">
+                            <i class="fas fa-quote-right absolute top-8 right-8 text-4xl text-theme-bg"></i>
+                            <div class="flex text-yellow-400 text-xs mb-4">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p class="text-gray-600 mb-6 leading-relaxed">"Ordered for my daughter's wedding. The guests couldn't stop praising the Motichoor Ladoos. Highly recommended!"</p>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-theme-secondary text-white flex items-center justify-center font-bold">P</div>
+                                <div>
+                                    <h5 class="font-bold text-theme-primary text-sm">Priya Patil</h5>
+                                    <span class="text-xs text-gray-400">Mumbai</span>
+                                </div>
+                            </div>
+                        </div>
+
+                         <div class="p-8 rounded-2xl bg-white shadow-sm hover:shadow-xl transition duration-300 text-left relative">
+                            <i class="fas fa-quote-right absolute top-8 right-8 text-4xl text-theme-bg"></i>
+                             <div class="flex text-yellow-400 text-xs mb-4">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <p class="text-gray-600 mb-6 leading-relaxed">"Their Namkeen selection is underrated. The Bakarwadi is perfectly spicy. Great service and fast delivery."</p>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gray-800 text-white flex items-center justify-center font-bold">A</div>
+                                <div>
+                                    <h5 class="font-bold text-theme-primary text-sm">Amit Kulkarni</h5>
+                                    <span class="text-xs text-gray-400">Pune</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== SWEETS PAGE ==================== -->
+        <div id="sweets-page" class="page-section hidden fade-in">
+            <div class="bg-theme-primary text-white py-16 text-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                <h2 class="font-serif text-4xl md:text-5xl font-bold relative z-10">Our Sweet Collection</h2>
+                <p class="mt-3 text-theme-secondary font-medium tracking-wide relative z-10">Pure Ghee • Hand Made • Authentic</p>
+            </div>
+            
+            <div class="container mx-auto px-4 py-16">
+                 <!-- Filters -->
+                 <div class="flex flex-wrap gap-3 mb-12 justify-center">
+                    <button class="px-8 py-3 rounded-full bg-theme-primary text-white font-medium shadow-lg shadow-theme-primary/30 transition transform hover:-translate-y-1">All Sweets</button>
+                    <button class="px-8 py-3 rounded-full bg-white text-gray-600 font-medium border border-gray-200 hover:border-theme-primary hover:text-theme-primary transition">Pedha</button>
+                    <button class="px-8 py-3 rounded-full bg-white text-gray-600 font-medium border border-gray-200 hover:border-theme-primary hover:text-theme-primary transition">Ladoo</button>
+                    <button class="px-8 py-3 rounded-full bg-white text-gray-600 font-medium border border-gray-200 hover:border-theme-primary hover:text-theme-primary transition">Syrup Base</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                     <!-- Repeated Product Structure for Consistency -->
+                     <!-- Item 1 -->
+                     <div class="product-card group relative">
+                        <div class="relative overflow-hidden rounded-2xl bg-theme-bg aspect-[3/4]">
+                            <img src="kandhipedha-12.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <div class="actions absolute bottom-4 inset-x-4">
+                                <button onclick="addToCart('Kandi Pedha')" class="w-full bg-white/95 backdrop-blur text-theme-primary font-bold py-3 rounded-xl hover:bg-theme-primary hover:text-white transition shadow-lg flex items-center justify-center gap-2">Add to Cart</button>
+                            </div>
+                        </div>
+                        <div class="pt-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-serif font-bold text-lg text-theme-primary">Satara Kandi Pedha</h4>
+                                    <p class="text-xs text-gray-500">Signature Item</p>
+                                </div>
+                                <span class="font-bold text-theme-secondary">₹520</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="product-card group relative">
+                        <div class="relative overflow-hidden rounded-2xl bg-theme-bg aspect-[3/4]">
+                            <img src="motichorladduos-111.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                            <div class="actions absolute bottom-4 inset-x-4">
+                                <button onclick="addToCart('Motichoor Ladoo')" class="w-full bg-white/95 backdrop-blur text-theme-primary font-bold py-3 rounded-xl hover:bg-theme-primary hover:text-white transition shadow-lg flex items-center justify-center gap-2">Add to Cart</button>
+                            </div>
+                        </div>
+                        <div class="pt-4">
+                             <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-serif font-bold text-lg text-theme-primary">Motichoor Ladoo</h4>
+                                    <p class="text-xs text-gray-500">Pure Ghee</p>
+                                </div>
+                                <span class="font-bold text-theme-secondary">₹480</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="product-card group relative">
+                        <div class="relative overflow-hidden rounded-2xl bg-theme-bg aspect-[3/4]">
+                            <img src="kajjukatli-1564.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                             <div class="actions absolute bottom-4 inset-x-4">
+                                <button onclick="addToCart('Kaju Katli')" class="w-full bg-white/95 backdrop-blur text-theme-primary font-bold py-3 rounded-xl hover:bg-theme-primary hover:text-white transition shadow-lg flex items-center justify-center gap-2">Add to Cart</button>
+                            </div>
+                        </div>
+                        <div class="pt-4">
+                             <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-serif font-bold text-lg text-theme-primary">Royal Kaju Katli</h4>
+                                    <p class="text-xs text-gray-500">Premium Cashews</p>
+                                </div>
+                                <span class="font-bold text-theme-secondary">₹950</span>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- Item 4 -->
+                    <div class="product-card group relative">
+                        <div class="relative overflow-hidden rounded-2xl bg-theme-bg aspect-[3/4]">
+                            <img src="mysorpak.jpg" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                             <div class="actions absolute bottom-4 inset-x-4">
+                                <button onclick="addToCart('Mysore Pak')" class="w-full bg-white/95 backdrop-blur text-theme-primary font-bold py-3 rounded-xl hover:bg-theme-primary hover:text-white transition shadow-lg flex items-center justify-center gap-2">Add to Cart</button>
+                            </div>
+                        </div>
+                        <div class="pt-4">
+                             <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-serif font-bold text-lg text-theme-primary">Mysore Pak</h4>
+                                    <p class="text-xs text-gray-500">Melt in Mouth</p>
+                                </div>
+                                <span class="font-bold text-theme-secondary">₹600</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SAVORIES PAGE ==================== -->
+        <div id="savories-page" class="page-section hidden fade-in">
+             <div class="bg-gray-100 py-16 text-center">
+                <h2 class="font-serif text-4xl font-bold text-theme-primary">Namkeen & Savories</h2>
+                <p class="mt-2 text-gray-600">Perfect teetime companions</p>
+            </div>
+            <div class="container mx-auto px-4 py-16">
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                     <!-- Savory 1 -->
+                     <div class="bg-white rounded-2xl p-6 text-center hover:shadow-xl transition border border-gray-100 group">
+                        <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 border-4 border-theme-bg group-hover:border-theme-secondary transition duration-300">
+                             <img src="bhakarwadi-1.jpg" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-serif font-bold text-lg text-theme-primary">Bakarwadi</h4>
+                        <p class="text-sm text-gray-500 mb-4">Spicy & Crunchy</p>
+                        <button onclick="addToCart('Bakarwadi')" class="text-theme-secondary font-bold hover:text-theme-primary uppercase text-xs tracking-wider">Add to Cart</button>
+                    </div>
+
+                    <!-- Savory 2 -->
+                     <div class="bg-white rounded-2xl p-6 text-center hover:shadow-xl transition border border-gray-100 group">
+                        <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 border-4 border-theme-bg group-hover:border-theme-secondary transition duration-300">
+                             <img src="chakli.jpg" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-serif font-bold text-lg text-theme-primary">Butter Chakli</h4>
+                        <p class="text-sm text-gray-500 mb-4">Pure Butter</p>
+                        <button onclick="addToCart('Butter Chakli')" class="text-theme-secondary font-bold hover:text-theme-primary uppercase text-xs tracking-wider">Add to Cart</button>
+                    </div>
+
+                     <!-- Savory 3 -->
+                     <div class="bg-white rounded-2xl p-6 text-center hover:shadow-xl transition border border-gray-100 group">
+                        <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 border-4 border-theme-bg group-hover:border-theme-secondary transition duration-300">
+                             <img src="farsana.jpg" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-serif font-bold text-lg text-theme-primary">Tikha Farsan</h4>
+                        <p class="text-sm text-gray-500 mb-4">Misal Topping</p>
+                        <button onclick="addToCart('Tikha Farsan')" class="text-theme-secondary font-bold hover:text-theme-primary uppercase text-xs tracking-wider">Add to Cart</button>
+                    </div>
+
+                     <!-- Savory 4 -->
+                     <div class="bg-white rounded-2xl p-6 text-center hover:shadow-xl transition border border-gray-100 group">
+                        <div class="w-40 h-40 mx-auto rounded-full overflow-hidden mb-6 border-4 border-theme-bg group-hover:border-theme-secondary transition duration-300">
+                             <img src="palakshev_1.jpg" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-serif font-bold text-lg text-theme-primary">Palak Sev</h4>
+                        <p class="text-sm text-gray-500 mb-4">Spinach Flavored</p>
+                        <button onclick="addToCart('Palak Sev')" class="text-theme-secondary font-bold hover:text-theme-primary uppercase text-xs tracking-wider">Add to Cart</button>
+                    </div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- ==================== ABOUT PAGE ==================== -->
+        <div id="about-page" class="page-section hidden fade-in">
+            <section class="py-20 bg-theme-primary text-white relative overflow-hidden">
+                <div class="absolute inset-0 bg-black/20"></div>
+                <div class="container mx-auto px-4 text-center relative z-10">
+                    <span class="text-theme-secondary font-bold tracking-[0.3em] uppercase mb-4 block text-sm">Our Heritage</span>
+                    <h2 class="font-serif text-4xl md:text-5xl font-bold mb-8">A Legacy of Sweetness in Satara</h2>
+                    <div class="max-w-3xl mx-auto">
+                        <p class="text-xl mb-8 leading-relaxed font-light text-white/90">
+                            Founded in 1950, <strong>Latkar Sweets</strong> started as a humble shop near Powai Naka. Today, we are synonymous with the "Taste of Satara". Our secret recipe for Kandi Pedha has been passed down through three generations, ensuring the same rich, caramelized flavor that our grandfather created.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="py-20 bg-white">
+                <div class="container mx-auto px-4 flex flex-col md:flex-row gap-16 items-center">
+                    <div class="w-full md:w-1/2">
+                        <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+                             <img src="kandhipedha_111.jpg" alt="Making Sweets" class="w-full">
+                             <div class="absolute bottom-6 right-6 bg-white p-4 rounded-xl shadow-lg">
+                                 <div class="text-center">
+                                     <span class="block text-3xl font-bold text-theme-primary">70+</span>
+                                     <span class="text-xs text-gray-500 uppercase tracking-wider">Years of Trust</span>
+                                 </div>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 space-y-8">
+                        <div>
+                             <div class="w-12 h-12 bg-theme-bg rounded-full flex items-center justify-center text-theme-primary text-xl mb-4">
+                                 <i class="fas fa-medal"></i>
+                             </div>
+                             <h4 class="font-serif font-bold text-2xl text-theme-primary mb-2">Uncompromised Quality</h4>
+                             <p class="text-gray-600 leading-relaxed">We maintain the highest standards of hygiene and quality. No preservatives, just pure ingredients.</p>
+                        </div>
+                        <div>
+                             <div class="w-12 h-12 bg-theme-bg rounded-full flex items-center justify-center text-theme-primary text-xl mb-4">
+                                 <i class="fas fa-hand-holding-heart"></i>
+                             </div>
+                             <h4 class="font-serif font-bold text-2xl text-theme-primary mb-2">Made with Love</h4>
+                             <p class="text-gray-600 leading-relaxed">Every sweet is handcrafted by our master chefs who have been with us for decades.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== CONTACT PAGE ==================== -->
+        <div id="contact-page" class="page-section hidden fade-in">
+             <div class="container mx-auto px-4 py-20">
+                 <div class="text-center mb-16 max-w-2xl mx-auto">
+                     <h2 class="font-serif text-4xl font-bold text-theme-primary">Get in Touch</h2>
+                     <p class="text-gray-500 mt-4 text-lg">Have a question? Visit our store or drop us a message below.</p>
+                 </div>
+                 
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
+                     <!-- Form -->
+                     <div class="bg-white p-10 rounded-3xl shadow-xl">
+                         <h3 class="font-serif font-bold text-2xl text-theme-primary mb-8">Send a Message</h3>
+                         <form onsubmit="event.preventDefault(); alert('Message sent! We will contact you soon.');">
+                             <div class="space-y-6">
+                                 <div>
+                                     <label class="block text-gray-600 text-sm font-bold mb-2 ml-1">Your Name</label>
+                                     <input type="text" class="w-full bg-theme-bg border-0 rounded-xl p-4 focus:ring-2 focus:ring-theme-secondary transition" placeholder="John Doe" required>
+                                 </div>
+                                 <div>
+                                     <label class="block text-gray-600 text-sm font-bold mb-2 ml-1">Phone Number</label>
+                                     <input type="tel" class="w-full bg-theme-bg border-0 rounded-xl p-4 focus:ring-2 focus:ring-theme-secondary transition" placeholder="+91 98765 43210" required>
+                                 </div>
+                                 <div>
+                                     <label class="block text-gray-600 text-sm font-bold mb-2 ml-1">Message</label>
+                                     <textarea class="w-full bg-theme-bg border-0 rounded-xl p-4 focus:ring-2 focus:ring-theme-secondary transition h-32" placeholder="Tell us what you need..." required></textarea>
+                                 </div>
+                                 <button type="submit" class="bg-theme-primary text-white font-bold py-4 px-8 rounded-xl w-full hover:bg-theme-secondary transition shadow-lg shadow-theme-primary/20">Send Message</button>
+                             </div>
+                         </form>
+                     </div>
+                     
+                     <!-- Info -->
+                     <div class="flex flex-col gap-8">
+                         <div class="bg-theme-primary text-white p-10 rounded-3xl shadow-xl relative overflow-hidden">
+                             <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+                             <h3 class="font-serif font-bold text-2xl mb-6">Main Branch</h3>
+                             <div class="space-y-6 relative z-10">
+                                 <div class="flex items-start gap-4">
+                                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                                         <i class="fas fa-map-marker-alt"></i>
+                                     </div>
+                                     <p class="leading-relaxed text-white/90">Opposite Powai Naka,<br>Satara, Maharashtra - 415001</p>
+                                 </div>
+                                 <div class="flex items-center gap-4">
+                                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                                         <i class="fas fa-phone-alt"></i>
+                                     </div>
+                                     <p class="text-white/90">+91 2162 234 567</p>
+                                 </div>
+                                 <div class="flex items-center gap-4">
+                                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                                         <i class="fas fa-envelope"></i>
+                                     </div>
+                                     <p class="text-white/90">orders@latkarsweets.com</p>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <!-- FAQ Box -->
+                          <div class="bg-white p-8 rounded-3xl shadow-lg border border-gray-100">
+                            <h3 class="font-serif text-xl font-bold text-theme-primary mb-6">Quick FAQ</h3>
+                            <div class="space-y-4">
+                                <div class="group">
+                                    <h4 class="font-bold text-gray-800 text-sm cursor-pointer flex justify-between items-center">
+                                        Do you ship internationally?
+                                        <i class="fas fa-plus text-theme-secondary text-xs"></i>
+                                    </h4>
+                                    <p class="text-gray-500 mt-2 text-sm leading-relaxed">Currently shipping across India. International coming soon.</p>
+                                </div>
+                                <hr class="border-gray-100">
+                                <div class="group">
+                                    <h4 class="font-bold text-gray-800 text-sm cursor-pointer flex justify-between items-center">
+                                        Shelf life of Kandi Pedha?
+                                        <i class="fas fa-plus text-theme-secondary text-xs"></i>
+                                    </h4>
+                                    <p class="text-gray-500 mt-2 text-sm leading-relaxed">15 days normally, 30 days refrigerated.</p>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                 </div>
+             </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#1A1A1A] text-gray-400 py-16 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Brand Info -->
+                <div class="md:col-span-1">
+                    <h3 class="text-white font-serif text-3xl font-bold mb-6">Latkar<span class="text-theme-secondary">.</span></h3>
+                    <p class="text-sm leading-relaxed mb-6">Spreading joy through sweetness since 1950. The authentic taste of Satara delivered to your doorstep.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-theme-secondary hover:text-white transition duration-300"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-theme-secondary hover:text-white transition duration-300"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-theme-secondary hover:text-white transition duration-300"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Shop</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a onclick="showPage('sweets-page')" class="hover:text-theme-secondary transition cursor-pointer">All Sweets</a></li>
+                        <li><a onclick="showPage('sweets-page')" class="hover:text-theme-secondary transition cursor-pointer">Satara Specials</a></li>
+                        <li><a onclick="showPage('savories-page')" class="hover:text-theme-secondary transition cursor-pointer">Namkeen</a></li>
+                        <li><a onclick="showPage('sweets-page')" class="hover:text-theme-secondary transition cursor-pointer">Gift Hampers</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Care -->
+                <div>
+                    <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Support</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a onclick="showPage('about-page')" class="hover:text-theme-secondary transition cursor-pointer">About Us</a></li>
+                        <li><a onclick="showPage('contact-page')" class="hover:text-theme-secondary transition cursor-pointer">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-theme-secondary transition cursor-pointer">Shipping Policy</a></li>
+                        <li><a href="#" class="hover:text-theme-secondary transition cursor-pointer">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                     <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Newsletter</h4>
+                     <p class="text-sm mb-4">Subscribe to get special offers and updates.</p>
+                     <form onsubmit="event.preventDefault();" class="relative">
+                         <input type="email" placeholder="Your email address" class="w-full bg-gray-800 border-none rounded-full py-3 px-5 text-sm focus:ring-1 focus:ring-theme-secondary">
+                         <button type="submit" class="absolute right-1 top-1 w-10 h-10 bg-theme-secondary rounded-full text-white flex items-center justify-center hover:bg-white hover:text-theme-primary transition">
+                             <i class="fas fa-arrow-right"></i>
+                         </button>
+                     </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs">
+                <p>&copy; 2024 Latkar Sweets. All Rights Reserved.</p>
+                <div class="flex gap-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Navigation Logic (SPA)
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page-section');
+            pages.forEach(page => {
+                page.classList.add('hidden');
+            });
+
+            const target = document.getElementById(pageId);
+            if (target) {
+                target.classList.remove('hidden');
+                window.scrollTo(0, 0); 
+            }
+
+            // Update Active State on Nav
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                if(link.getAttribute('data-target') === pageId) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        function toggleMobileMenu() {
+             menu.classList.toggle('hidden');
+        }
+
+        if(btn) btn.addEventListener('click', toggleMobileMenu);
+
+        // Login Modal Logic
+        function toggleLoginModal() {
+            const modal = document.getElementById('login-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        // Cart Functionality
+        let cartCount = 0;
+        const countElement = document.getElementById('cart-count');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-message');
+        let toastTimeout;
+
+        function addToCart(itemName) {
+            cartCount++;
+            countElement.innerText = cartCount;
+            
+            countElement.parentElement.classList.add('scale-110');
+            setTimeout(() => countElement.parentElement.classList.remove('scale-110'), 200);
+
+            toastMsg.innerText = `${itemName} added to cart`;
+            toast.classList.remove('translate-x-full');
+            
+            if(toastTimeout) clearTimeout(toastTimeout);
+
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        // Initialize Home Page
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage('home-page');
+        });
+    </script>
+</body>
+</html>
